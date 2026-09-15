@@ -2,27 +2,22 @@ name: Atualizar Senha Diária
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Roda todo dia à meia-noite
-  workflow_dispatch: # Permite rodar manualmente se quiser
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
-  update-key:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+
     steps:
-      - name: Checkout do Repositório
+      - name: Checkout do repositório
         uses: actions/checkout@v3
 
-      - name: Gerar Nova Senha e Atualizar Arquivo
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Executar script de atualização
         run: |
-          nova_senha=$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 10)
-          echo "$nova_senha" > chave.txt
-          
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          git add chave.txt
-          git commit -m "⚙️ Atualização automática da chave"
-          git push
-          
+          python viewbot.py
